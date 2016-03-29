@@ -1,5 +1,6 @@
 package de.sfn_kassel.soundlocate.configServer.test;
 
+import de.sfn_kassel.soundlocate.configServer.program.ProcessDiedListener;
 import de.sfn_kassel.soundlocate.configServer.programs.SoundInput;
 
 import java.io.IOException;
@@ -10,7 +11,13 @@ import java.io.IOException;
 class SoundInputTest {
     public static void main(String[] args) throws IOException, InterruptedException {
         SoundInput si = new SoundInput(1234);
-        si.start();
+        ProcessDiedListener pd = new ProcessDiedListener() {
+            @Override
+            public void onProcessDied(Process p) {
+                System.out.println(p + "died :(");
+            }
+        };
+        si.start(pd);
         Thread.sleep(10000);
     }
 }

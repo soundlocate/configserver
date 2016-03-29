@@ -18,9 +18,9 @@ public class SupervisedProgram implements Program {
         processBuilder = new ProcessBuilder(command);
     }
 
-    public void start() throws IOException {
+    public void start(ProcessDiedListener pd) throws IOException {
         process = processBuilder.start();
-        logThread = new LogThread(process, processBuilder.command().get(0));
+        logThread = new LogThread(process, processBuilder.command().get(0), pd);
         logThread.start();
     }
 

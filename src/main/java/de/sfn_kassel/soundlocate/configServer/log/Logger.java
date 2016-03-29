@@ -15,7 +15,7 @@ public class Logger implements Closeable {
         try {
             out = new PrintWriter(new BufferedWriter(new FileWriter(logFileName, true)));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log(e);
             System.exit(-1);
         } catch (IOException e) {
             e.printStackTrace();
@@ -32,6 +32,17 @@ public class Logger implements Closeable {
     public synchronized void log(String programm, Stream stream, String msg) {
         char cStream = stream == Stream.StdOut ? 'o' : 'e';
         String output = cStream + " " + System.currentTimeMillis() + " " + programm + "\t" + msg;
+        System.out.println(output);
+        out.println(output);
+    }
+
+    public synchronized void log(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+
+        char cStream = 'e';
+        String output = cStream + " " + System.currentTimeMillis() + " " + "configServer" + "\t" + sw.toString().replace("\n", "\t");
         System.out.println(output);
         out.println(output);
     }

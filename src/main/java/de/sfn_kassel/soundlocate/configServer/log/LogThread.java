@@ -1,5 +1,7 @@
 package de.sfn_kassel.soundlocate.configServer.log;
 
+import de.sfn_kassel.soundlocate.configServer.program.ProcessDiedListener;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 
@@ -9,11 +11,15 @@ import java.io.IOException;
 public class LogThread extends Thread {
     private final BufferedInputStream std, err;
     private final String name;
+    private final Process p;
+    private final ProcessDiedListener dl;
 
-    public LogThread(Process p, String name) {
+    public LogThread(Process p, String name, ProcessDiedListener dl) {
         err = new BufferedInputStream(p.getErrorStream());
         std = new BufferedInputStream(p.getInputStream());
         this.name = name;
+        this.p = p;
+        this.dl = dl;
     }
 
     @Override
@@ -21,6 +27,11 @@ public class LogThread extends Thread {
         String errString = "";
         String stdString = "";
         while (true) {
+            if (!p.isAlive() && Thread.interrupted() == false) {
+                Logger.getInstance().log(name, Stream.StdErr, "died :(");
+                dl.onProcessDied(p);
+            }
+
             try {
                 while (err.available() > 0) {
                     errString += (char) err.read();
@@ -40,7 +51,7 @@ public class LogThread extends Thread {
 
 
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.getInstance().log(e);
             }
 
             try {
