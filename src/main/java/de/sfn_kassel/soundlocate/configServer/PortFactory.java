@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 
 /**
  * Created by jaro on 29.03.16.
+ * a Class that can give you free TCP/IP ports
  */
 public class PortFactory {
     private int now;

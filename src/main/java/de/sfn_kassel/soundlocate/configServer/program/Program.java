@@ -4,6 +4,7 @@ import java.io.IOException;
 
 /**
  * Created by jaro on 29.03.16.
+ * the abstract interface for representing a Program and its lifecycle
  */
 public interface Program {
     static void multiStart(ProcessDiedListener pd, Program... ps) throws IOException {
@@ -12,7 +13,7 @@ public interface Program {
         }
     }
 
-    static void multiKill(Program... ps) throws IOException {
+    static void multiKill(Program... ps) {
         for (Program p : ps) {
             p.kill();
         }

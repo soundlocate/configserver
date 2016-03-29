@@ -7,14 +7,15 @@ import java.io.IOException;
 
 /**
  * Created by jaro on 29.03.16.
+ * the Logging thread, that takes care about a SupervisedThread
  */
 public class LogThread extends Thread {
     private final BufferedInputStream std, err;
-    private final String name;
+    private final Class name;
     private final Process p;
     private final ProcessDiedListener dl;
 
-    public LogThread(Process p, String name, ProcessDiedListener dl) {
+    public LogThread(Process p, Class name, ProcessDiedListener dl) {
         err = new BufferedInputStream(p.getErrorStream());
         std = new BufferedInputStream(p.getInputStream());
         this.name = name;
@@ -27,8 +28,8 @@ public class LogThread extends Thread {
         String errString = "";
         String stdString = "";
         while (true) {
-            if (!p.isAlive() && Thread.interrupted() == false) {
-                Logger.getInstance().log(name, Stream.StdErr, "died :(");
+            if (!p.isAlive() && !Thread.interrupted()) {
+                Logger.log(name, Stream.STD_ERR, "died :(");
                 dl.onProcessDied(p);
             }
 
@@ -36,7 +37,7 @@ public class LogThread extends Thread {
                 while (err.available() > 0) {
                     errString += (char) err.read();
                     if (errString.endsWith("\n")) {
-                        Logger.getInstance().log(name, Stream.StdErr, errString.trim());
+                        Logger.log(name, Stream.STD_ERR, errString.trim());
                         errString = "";
                     }
                 }
@@ -44,14 +45,14 @@ public class LogThread extends Thread {
                 while (std.available() > 0) {
                     stdString += (char) std.read();
                     if (stdString.endsWith("\n")) {
-                        Logger.getInstance().log(name, Stream.StdOut, stdString.trim());
+                        Logger.log(name, Stream.STD_OUT, stdString.trim());
                         stdString = "";
                     }
                 }
 
 
             } catch (IOException e) {
-                Logger.getInstance().log(e);
+                Logger.log(e);
             }
 
             try {

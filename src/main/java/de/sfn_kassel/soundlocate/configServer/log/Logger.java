@@ -1,17 +1,20 @@
 package de.sfn_kassel.soundlocate.configServer.log;
 
+import de.sfn_kassel.soundlocate.configServer.ConfigServer;
+
 import java.io.*;
 
 /**
  * Created by jaro on 29.03.16.
+ * the main Logger Class
  */
 public class Logger implements Closeable {
-    private static String FILENAME = "soundlocate.log";
     private static Logger instance;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final String FILENAME = "soundlocate.log";
     private PrintWriter out;
 
     private Logger(String logFileName) {
-        File logFile = new File(logFileName);
         try {
             out = new PrintWriter(new BufferedWriter(new FileWriter(logFileName, true)));
         } catch (FileNotFoundException e) {
@@ -22,27 +25,28 @@ public class Logger implements Closeable {
         }
     }
 
-    public static Logger getInstance() {
+    public static void log(Class program, Stream stream, String msg) {
+        getInstance().internalLog(program, stream, msg);
+    }
+
+    public static void log(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+
+        getInstance().internalLog(ConfigServer.class, Stream.STD_ERR, sw.toString().replace("\n", "\t"));
+    }
+
+    private static Logger getInstance() {
         if (instance == null) {
             instance = new Logger(FILENAME);
         }
         return instance;
     }
 
-    public synchronized void log(String programm, Stream stream, String msg) {
-        char cStream = stream == Stream.StdOut ? 'o' : 'e';
-        String output = cStream + " " + System.currentTimeMillis() + " " + programm + "\t" + msg;
-        System.out.println(output);
-        out.println(output);
-    }
-
-    public synchronized void log(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-
-        char cStream = 'e';
-        String output = cStream + " " + System.currentTimeMillis() + " " + "configServer" + "\t" + sw.toString().replace("\n", "\t");
+    private synchronized void internalLog(Class program, Stream stream, String msg) {
+        char cStream = stream == Stream.STD_OUT ? 'o' : 'e';
+        String output = cStream + " " + System.currentTimeMillis() + " " + program.getName() + "\t" + msg;
         System.out.println(output);
         out.println(output);
     }

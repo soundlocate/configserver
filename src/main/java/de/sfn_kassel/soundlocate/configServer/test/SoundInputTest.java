@@ -7,16 +7,12 @@ import java.io.IOException;
 
 /**
  * Created by jaro on 29.03.16.
+ * a Test class for the SoundInput Class
  */
 class SoundInputTest {
     public static void main(String[] args) throws IOException, InterruptedException {
         SoundInput si = new SoundInput(1234);
-        ProcessDiedListener pd = new ProcessDiedListener() {
-            @Override
-            public void onProcessDied(Process p) {
-                System.out.println(p + "died :(");
-            }
-        };
+        ProcessDiedListener pd = p -> System.out.println(p + "died :(");
         si.start(pd);
         Thread.sleep(10000);
     }

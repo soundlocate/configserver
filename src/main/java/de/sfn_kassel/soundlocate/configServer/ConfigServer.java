@@ -14,11 +14,17 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.io.IOException;
 
-public class Main {
-    final Options options;
-    String filename = "config.toml";
+/**
+ * Created by jaro on 29.03.16.
+ * the main Class of the ConfigServer
+ */
 
-    public Main(String[] args) {
+public class ConfigServer {
+    private final Options options;
+    @SuppressWarnings("FieldCanBeLocal")
+    private String filename = "config.toml";
+
+    public ConfigServer(String[] args) {
         options = new Options();
         options.addOption("help", "prints out the Help");
         options.addOption("f", "file", true, "specify the config file. default is \"config.json\"");
@@ -46,12 +52,12 @@ public class Main {
         try {
             toml = new Toml().read(new File(filename));
         } catch (Exception e) {
-            Logger.getInstance().log(e);
+            Logger.log(e);
             System.exit(-123);
         }
         boolean real = toml.getBoolean("general.real", false);
 
-        Logger.getInstance().log("configServer", Stream.StdOut, "starting programs with real=" + real);
+        Logger.log(ConfigServer.class, Stream.STD_OUT, "starting programs with real=" + real);
 
         PortFactory pf = new PortFactory(49151);//magic constant
         int inToFft, inToNull, fftToLocate, locateToGui, locateToWs;
@@ -61,10 +67,10 @@ public class Main {
         locateToGui = pf.getPort();
         locateToWs = pf.getPort();
 
-        Logger.getInstance().log("configServer", Stream.StdOut, "ports are: " +
+        Logger.log(ConfigServer.class, Stream.STD_OUT, "ports are: " +
                 "{inToFFt: " + inToFft +
                 ", inToNull: " + inToNull +
-                ", fftTolocate: " + fftToLocate +
+                ", fftToLocate: " + fftToLocate +
                 ", locateToGui: " + locateToGui +
                 ", locateToWs: " + locateToWs +
                 "}");
@@ -78,10 +84,10 @@ public class Main {
             @Override
             public void onProcessDied(Process p) {
                 try {
-                    Logger.getInstance().log("configServer", Stream.StdErr, p + "died :( restarting everything...");
+                    Logger.log(ConfigServer.class, Stream.STD_ERR, p + "died :( restarting everything...");
                     Program.multiRestart(this, soundInput, soundSimulate, soundFFT, soundLocate);
                 } catch (IOException e) {
-                    Logger.getInstance().log(e);
+                    Logger.log(e);
                 }
             }
         };
@@ -89,26 +95,22 @@ public class Main {
         try {
             Program.multiStart(pd, soundInput, soundSimulate, soundFFT, soundLocate);
         } catch (IOException e) {
-            Logger.getInstance().log(e);
+            Logger.log(e);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                try {
-                    Logger.getInstance().log("configServer", Stream.StdOut, "shutting down...");
+                Logger.log(ConfigServer.class, Stream.STD_OUT, "shutting down...");
                     Program.multiKill(soundLocate, soundFFT, soundSimulate, soundInput);
-                    Logger.getInstance().log("configServer", Stream.StdOut, "everything shuted down sucessfully");
-                } catch (IOException e) {
-                    Logger.getInstance().log(e);
-                }
+                Logger.log(ConfigServer.class, Stream.STD_OUT, "everything shut down successfully");
             }
         });
     }
 
 
     public static void main(String[] args) {
-        new Main(args);
+        new ConfigServer(args);
     }
 
     private void printHelp() {
