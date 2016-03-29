@@ -36,8 +36,6 @@ public class Main {
         //argument parsing stage finished
 
         Toml toml = new Toml().read(filename);
-
-
     }
 
     public static void main(String[] args) {
