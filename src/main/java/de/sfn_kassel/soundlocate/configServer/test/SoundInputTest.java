@@ -1,4 +1,6 @@
-package de.sfn_kassel.soundlocate.configServer.programs;
+package de.sfn_kassel.soundlocate.configServer.test;
+
+import de.sfn_kassel.soundlocate.configServer.programs.SoundInput;
 
 import java.io.IOException;
 
@@ -12,4 +14,3 @@ class SoundInputTest {
         Thread.sleep(10000);
     }
 }
-

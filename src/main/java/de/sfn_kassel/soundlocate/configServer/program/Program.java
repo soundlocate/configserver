@@ -1,4 +1,4 @@
-package de.sfn_kassel.soundlocate.configServer.programs;
+package de.sfn_kassel.soundlocate.configServer.program;
 
 import java.io.IOException;
 
