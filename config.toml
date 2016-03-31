@@ -1,2 +1,28 @@
 [general]
-real=false
+samplerate = 192000
+real = false
+log = false
+micPositions = [0,0,0
+                0,0,0
+                0,0,0
+                0,0,0]
+
+[soundInput]
+deviceName = "pulse"
+
+[soundSimulate]
+soundFile = "sine.wav"
+
+[soundFFT]
+fftSize = 192000
+windowingFunktion = "hann"
+fftPerSec = 10
+
+[soundLocate]
+algorithms = "PhaseOnly"
+accuracy = 0.01
+
+[soundReduce]
+maxClusterSize = 0.5
+maxKeep = 10
+meanWindow = 3

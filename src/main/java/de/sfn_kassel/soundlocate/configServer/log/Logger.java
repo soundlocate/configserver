@@ -9,9 +9,8 @@ import java.io.*;
  * the main Logger Class
  */
 public class Logger implements Closeable {
+    private static final String FILENAME = "soundlocate.log";
     private static Logger instance;
-    @SuppressWarnings("FieldCanBeLocal")
-    private final String FILENAME = "soundlocate.log";
     private PrintWriter out;
 
     private Logger(String logFileName) {

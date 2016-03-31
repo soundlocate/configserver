@@ -9,12 +9,16 @@ import java.io.IOException;
 public interface Program {
     static void multiStart(ProcessDiedListener pd, Program... ps) throws IOException {
         for (Program p : ps) {
+            if (p == null)
+                continue;
             p.start(pd);
         }
     }
 
     static void multiKill(Program... ps) {
         for (Program p : ps) {
+            if (p == null)
+                continue;
             p.kill();
         }
     }

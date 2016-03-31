@@ -1,6 +1,7 @@
 package de.sfn_kassel.soundlocate.configServer;
 
 import com.moandjiezana.toml.Toml;
+import de.sfn_kassel.soundlocate.configServer.config.Config;
 import de.sfn_kassel.soundlocate.configServer.log.Logger;
 import de.sfn_kassel.soundlocate.configServer.log.Stream;
 import de.sfn_kassel.soundlocate.configServer.program.ProcessDiedListener;
@@ -21,7 +22,6 @@ import java.io.IOException;
 
 public class ConfigServer {
     private final Options options;
-    @SuppressWarnings("FieldCanBeLocal")
     private String filename = "config.toml";
 
     public ConfigServer(String[] args) {
@@ -55,7 +55,9 @@ public class ConfigServer {
             Logger.log(e);
             System.exit(-123);
         }
-        boolean real = toml.getBoolean("general.real", false);
+        Config config = toml.to(Config.class);
+
+        boolean real = config.general.real;
 
         Logger.log(ConfigServer.class, Stream.STD_OUT, "starting programs with real=" + real);
 
@@ -75,7 +77,9 @@ public class ConfigServer {
                 ", locateToWs: " + locateToWs +
                 "}");
 
-        SoundInput soundInput = new SoundInput(real ? inToFft : inToNull);
+
+        SoundInput soundInput = real ? new SoundInput(real ? inToFft : inToNull) : null;
+
         SoundSimulate soundSimulate = new SoundSimulate(real ? inToNull : inToFft, locateToGui);
         SoundFFT soundFFT = new SoundFFT(inToFft, fftToLocate);
         SoundLocate soundLocate = new SoundLocate(fftToLocate, locateToGui, locateToWs);

@@ -8,6 +8,6 @@ import de.sfn_kassel.soundlocate.configServer.program.SupervisedProgram;
  */
 public class SoundInput extends SupervisedProgram {
     public SoundInput(int port) {
-        super("soundInput", "" + port);
+        super("java", "-jar", "soundInput.jar", "" + port);
     }
 }

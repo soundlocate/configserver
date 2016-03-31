@@ -24,8 +24,8 @@ public class PortFactory {
 
     private boolean portUsable(int port) {
         try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            serverSocket.close();
+            ServerSocket testServerSocket = new ServerSocket(port);
+            testServerSocket.close();
         } catch (IOException e) {
             return false;
         }
