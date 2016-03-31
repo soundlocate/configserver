@@ -13,14 +13,13 @@ public class LogThread extends Thread {
     private final BufferedInputStream std, err;
     private final Class name;
     private final Process p;
-    private final ProcessDiedListener dl;
 
-    public LogThread(Process p, Class name, ProcessDiedListener dl) {
+    public LogThread(Process p, Class name) {
         err = new BufferedInputStream(p.getErrorStream());
         std = new BufferedInputStream(p.getInputStream());
         this.name = name;
         this.p = p;
-        this.dl = dl;
+        this.start();
     }
 
     @Override
@@ -28,8 +27,8 @@ public class LogThread extends Thread {
         String errString = "";
         String stdString = "";
         while (true) {
-            if (!p.isAlive() && !Thread.interrupted()) {
-                dl.onProcessDied(p);
+            if (!p.isAlive()) {
+                Logger.log(name, Stream.STD_ERR, "died :(");
                 break;
             }
 
@@ -52,13 +51,15 @@ public class LogThread extends Thread {
 
 
             } catch (IOException e) {
-                Logger.log(e);
+                if (!e.getMessage().contains("Stream closed")) {
+                    Logger.log(e);
+                }
             }
 
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                break;
+                Logger.log(e);
             }
         }
     }

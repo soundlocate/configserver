@@ -3,6 +3,8 @@ package de.sfn_kassel.soundlocate.configServer.log;
 import de.sfn_kassel.soundlocate.configServer.ConfigServer;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by jaro on 29.03.16.
@@ -12,8 +14,10 @@ public class Logger implements Closeable {
     private static final String FILENAME = "soundlocate.log";
     private static Logger instance;
     private PrintWriter out;
+    private final SimpleDateFormat f;
 
     private Logger(String logFileName) {
+        f = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS");
         try {
             out = new PrintWriter(new BufferedWriter(new FileWriter(logFileName, true)));
         } catch (FileNotFoundException e) {
@@ -45,7 +49,7 @@ public class Logger implements Closeable {
 
     private synchronized void internalLog(Class program, Stream stream, String msg) {
         char cStream = stream == Stream.STD_OUT ? 'o' : 'e';
-        String output = cStream + " " + System.currentTimeMillis() + " " + program.getName().split("\\.")[program.getName().split("\\.").length - 1] + "\t" + msg;
+        String output = cStream + " " + f.format(new Date()) + " " + program.getName().split("\\.")[program.getName().split("\\.").length - 1] + "\t" + msg;
         System.out.println(output);
         out.println(output);
     }

@@ -14,7 +14,7 @@ public interface Program {
         }
 
         for (Program p : pa) {
-            if (p == null)
+            if (p.isNull())
                 continue;
             p.kill();
         }
@@ -22,4 +22,5 @@ public interface Program {
 
     //void start(ProcessDiedListener p, ...) throws IOException; //TODO: find a solution
     void kill();
+    boolean isNull();
 }

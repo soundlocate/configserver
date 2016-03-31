@@ -6,6 +6,7 @@ import de.sfn_kassel.soundlocate.configServer.log.Logger;
 import de.sfn_kassel.soundlocate.configServer.log.Stream;
 import de.sfn_kassel.soundlocate.configServer.program.ProcessDiedListener;
 import de.sfn_kassel.soundlocate.configServer.program.Program;
+import de.sfn_kassel.soundlocate.configServer.program.Supervisor;
 import de.sfn_kassel.soundlocate.configServer.programs.SoundFFT;
 import de.sfn_kassel.soundlocate.configServer.programs.SoundInput;
 import de.sfn_kassel.soundlocate.configServer.programs.SoundLocate;
@@ -25,10 +26,10 @@ public class ConfigServer {
     private String filename = "config.toml";
     private static Config config;
 
-    private final SoundInput soundInput;
-    private final SoundSimulate soundSimulate;
-    private final SoundFFT soundFFT;
-    private final SoundLocate soundLocate;
+    private SoundInput soundInput = null;
+    private SoundSimulate soundSimulate = null;
+    private SoundFFT soundFFT = null;
+    private SoundLocate soundLocate = null;
 
     public static void main(String[] args) {
         new ConfigServer(args);
@@ -69,19 +70,25 @@ public class ConfigServer {
         }
         //config reading finished
 
+
         ProcessDiedListener processDiedListener = p -> {
             try {
                 Logger.log(ConfigServer.class, Stream.STD_ERR, p + "s :( restarting everything...");
-                Program.multiKill();
+                Program.multiKill(soundInput, soundSimulate, soundFFT, soundLocate);
+                waitBetweenStarts();
                 startPrograms();
             } catch (IOException e) {
                 Logger.log(e);
             }
         };
-        soundInput = new SoundInput(processDiedListener);
-        soundSimulate = new SoundSimulate(processDiedListener);
-        soundFFT = new SoundFFT(processDiedListener);
-        soundLocate = new SoundLocate(processDiedListener);
+
+        Supervisor su = new Supervisor(processDiedListener);
+
+        soundInput = new SoundInput(su);
+        soundSimulate = new SoundSimulate(su);
+        soundFFT = new SoundFFT(su);
+        soundLocate = new SoundLocate(su);
+
         //created all the Objects
 
         try {
@@ -90,7 +97,7 @@ public class ConfigServer {
             Logger.log(e);
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread() { //TODO(jaro) remove pointless shutdown error log messages -> shuld be removed now
+        Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 Logger.log(ConfigServer.class, Stream.STD_OUT, "shutting down...");
@@ -114,6 +121,7 @@ public class ConfigServer {
 
         Logger.log(ConfigServer.class, Stream.STD_OUT, "ports are: " +
                 "{inToFFt: " + inToFft +
+
                 ", inToNull: " + inToNull +
                 ", fftToLocate: " + fftToLocate +
                 ", locateToGui: " + locateToGui +
@@ -121,13 +129,20 @@ public class ConfigServer {
                 "}");
         if (real) {
             soundInput.start(inToFft);
+            waitBetweenStarts();
             soundSimulate.start(inToNull, locateToGui);
         }
         else {
             soundSimulate.start(inToFft, locateToGui);
         }
+        waitBetweenStarts();
         soundFFT.start(inToFft, fftToLocate);
+        waitBetweenStarts();
         soundLocate.start(fftToLocate, locateToGui, locateToWs);
+    }
+
+    private void waitBetweenStarts() {
+
     }
 
     private void printHelp() {

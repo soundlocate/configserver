@@ -2,6 +2,7 @@ package de.sfn_kassel.soundlocate.configServer.programs;
 
 import de.sfn_kassel.soundlocate.configServer.program.ProcessDiedListener;
 import de.sfn_kassel.soundlocate.configServer.program.SupervisedProgram;
+import de.sfn_kassel.soundlocate.configServer.program.Supervisor;
 
 import java.io.IOException;
 
@@ -10,7 +11,7 @@ import java.io.IOException;
  * the class, that represents the SoundLocate program
  */
 public class SoundLocate extends SupervisedProgram {
-    public SoundLocate(ProcessDiedListener pd) {
+    public SoundLocate(Supervisor pd) {
         super(pd, "soundLocate", "localhost");
     }
 

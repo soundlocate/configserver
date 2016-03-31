@@ -17,16 +17,16 @@ public abstract class SupervisedProgram implements Program {
     private final String[] baseProgramm;
     private Process process;
     private LogThread logThread;
-    private final ProcessDiedListener processDiedListener;
+    private final Supervisor supervisor;
 
-    protected SupervisedProgram(ProcessDiedListener processDiedListener, String... command) {
+    protected SupervisedProgram(Supervisor supervisor, String... command) {
         if (command[0].equals("java")) { //TODO: maybe better solution
             command[1] =  "bin/" + command[1];
         } else {
             command[0] = "bin/" + command[0];
         }
         baseProgramm = command;
-        this.processDiedListener = processDiedListener;
+        this.supervisor = supervisor;
     }
 
     protected void start(String... args) throws IOException {
@@ -37,12 +37,17 @@ public abstract class SupervisedProgram implements Program {
         programCall.addAll(Arrays.asList(args));
         ProcessBuilder processBuilderWithArgs = new ProcessBuilder(programCall);
         process = processBuilderWithArgs.start();
-        logThread = new LogThread(process, this.getClass(), this.processDiedListener);
-        logThread.start();
+        logThread = new LogThread(process, this.getClass());
+        supervisor.addProcess(process);
     }
 
     public void kill() {
-        logThread.interrupt();
+        supervisor.removeProcess(process);
         process.destroy();
+    }
+
+    @Override
+    public boolean isNull() {
+        return this.process == null;
     }
 }
