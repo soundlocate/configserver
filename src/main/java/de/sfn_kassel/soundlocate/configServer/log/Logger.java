@@ -45,7 +45,7 @@ public class Logger implements Closeable {
 
     private synchronized void internalLog(Class program, Stream stream, String msg) {
         char cStream = stream == Stream.STD_OUT ? 'o' : 'e';
-        String output = cStream + " " + System.currentTimeMillis() + " " + program.getName() + "\t" + msg;
+        String output = cStream + " " + System.currentTimeMillis() + " " + program.getName().split(".")[program.getName().split(".").length - 1] + "\t" + msg;
         System.out.println(output);
         out.println(output);
     }

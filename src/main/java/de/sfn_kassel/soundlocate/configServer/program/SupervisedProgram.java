@@ -16,7 +16,8 @@ public abstract class SupervisedProgram implements Program {
     private LogThread logThread;
 
     protected SupervisedProgram(String... command) {
-        command[0] = "bin/" + command[0];
+        command[0] = command[0].equals("java") ? command[0] : "bin/" + command[0]; //TODO(jaro): better solution
+        command[1] = command[0].equals("java") ? "bin/" + command[1] : command[1];
         processBuilder = new ProcessBuilder(command);
     }
 
