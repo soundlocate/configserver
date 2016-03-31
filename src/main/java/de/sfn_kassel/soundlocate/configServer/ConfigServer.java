@@ -22,19 +22,13 @@ import java.io.IOException;
  */
 
 public class ConfigServer {
+    private static Config config;
     private final Options options;
     private String filename = "config.toml";
-    private static Config config;
-
     private SoundInput soundInput = null;
     private SoundSimulate soundSimulate = null;
     private SoundFFT soundFFT = null;
     private SoundLocate soundLocate = null;
-
-    public static void main(String[] args) {
-        new ConfigServer(args);
-    }
-
 
     public ConfigServer(String[] args) {
         options = new Options();
@@ -81,13 +75,15 @@ public class ConfigServer {
                 Logger.log(e);
             }
         };
-
         Supervisor su = new Supervisor(processDiedListener);
 
-        soundInput = new SoundInput(su);
-        soundSimulate = new SoundSimulate(su);
-        soundFFT = new SoundFFT(su);
-        soundLocate = new SoundLocate(su);
+        String positionFileName = "positions.csv";
+        //TODO: write positionFile
+
+        soundInput = new SoundInput(su, config.general.samplerate, config.soundInput.deviceName);
+        soundSimulate = new SoundSimulate(su, config.general.samplerate, config.soundSimulate.soundFile, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
+        soundFFT = new SoundFFT(su, config.soundFFT.fftSize, config.general.samplerate, config.soundFFT.fftPerSec, config.soundFFT.windowingFunction);
+        soundLocate = new SoundLocate(su, config.soundLocate.algorithms, config.soundLocate.accuracy, config.soundReduce.maxClusterSize, config.soundReduce.maxKeep, config.soundReduce.meanWindow, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
 
         //created all the Objects
 
@@ -105,6 +101,10 @@ public class ConfigServer {
                 Logger.log(ConfigServer.class, Stream.STD_OUT, "everything shut down successfully");
             }
         });
+    }
+
+    public static void main(String[] args) {
+        new ConfigServer(args);
     }
 
     private void startPrograms() throws IOException{

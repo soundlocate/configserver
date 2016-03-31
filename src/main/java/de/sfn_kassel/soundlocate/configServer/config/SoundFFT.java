@@ -5,6 +5,6 @@ package de.sfn_kassel.soundlocate.configServer.config;
  */
 public class SoundFFT {
     public int fftSize;
-    public String windowingFunktion;
+    public String windowingFunction;
     public int fftPerSec;
 }

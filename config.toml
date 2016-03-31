@@ -1,7 +1,7 @@
 [general]
 samplerate = 192000
 real = false
-log = false
+logfileBaseName = "firstlog"
 micPositions = [0,0,0
                 0,0,0
                 0,0,0
@@ -15,7 +15,7 @@ soundFile = "sine.wav"
 
 [soundFFT]
 fftSize = 192000
-windowingFunktion = "hann"
+windowingFunction = "hann"
 fftPerSec = 10
 
 [soundLocate]

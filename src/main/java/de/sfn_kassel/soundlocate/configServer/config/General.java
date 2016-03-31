@@ -9,5 +9,6 @@ public class General {
     public int samplerate;
     public boolean real;
     public boolean log;
+    public String logfileBaseName;
     public List<Double> micPositions;
 }

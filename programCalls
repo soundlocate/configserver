@@ -1,4 +1,29 @@
-[soundInput]
-java -jar soundInput.jar (port)
-
-[soundSimulate]
+java -jar soundInput.jar
+    -o outPort
+    -s samplerate
+    -d deviceName
+soundSimulate
+    -i inPort
+    -o outPort
+    -s samplerate
+    -f soundFile
+    -l logfile -> wenn dieser Parameter nicht angegeben ist, ist loggign inaktiv
+    -p positionfile.csv
+soundFFT
+    -i inPort
+    -o outport
+    -f fftSize
+    -s samplerate
+    -r fftPerSec
+    -w windowingFunction
+soundLocate
+    -i inPort
+    -o outPort
+    -w wsPort
+    -d dataAlgorithms
+    -a accuracy
+    -c maxClusterSize
+    -k maxKeep
+    -m meanWindow
+    -l logfile -> wenn dieser Parameter nicht angegeben ist, ist loggign inaktiv
+    -p positionfile.csv

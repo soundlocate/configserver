@@ -11,4 +11,5 @@ public class Config {
     public SoundFFT soundFFT;
     public SoundLocate soundLocate;
     public SoundReduce soundReduce;
+    public String logfileBaseName;
 }
