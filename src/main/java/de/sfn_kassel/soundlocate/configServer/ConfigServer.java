@@ -77,7 +77,6 @@ public class ConfigServer {
                 ", locateToWs: " + locateToWs +
                 "}");
 
-
         SoundInput soundInput = real ? new SoundInput(real ? inToFft : inToNull) : null;
 
         SoundSimulate soundSimulate = new SoundSimulate(real ? inToNull : inToFft, locateToGui);

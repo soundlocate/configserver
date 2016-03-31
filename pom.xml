@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.sf_kassel.soundlocate</groupId>
-    <artifactId>cofigServer</artifactId>
+    <artifactId>configServer</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>

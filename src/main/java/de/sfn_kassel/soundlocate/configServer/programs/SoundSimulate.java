@@ -8,6 +8,6 @@ import de.sfn_kassel.soundlocate.configServer.program.SupervisedProgram;
  */
 public class SoundSimulate extends SupervisedProgram {
     public SoundSimulate(int outPort, int inPort) {
-        super("soundSimulate", "" + inPort, "" + outPort);
+        super("soundSimulate", "" + outPort, "" + inPort);
     }
 }
