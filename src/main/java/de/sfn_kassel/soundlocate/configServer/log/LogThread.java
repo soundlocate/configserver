@@ -29,7 +29,6 @@ public class LogThread extends Thread {
         String stdString = "";
         while (true) {
             if (!p.isAlive() && !Thread.interrupted()) {
-                Logger.log(name, Stream.STD_ERR, "died :(");
                 dl.onProcessDied(p);
             }
 

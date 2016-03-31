@@ -11,9 +11,9 @@ import java.io.IOException;
  */
 class SoundInputTest {
     public static void main(String[] args) throws IOException, InterruptedException {
-        SoundInput si = new SoundInput(1234);
         ProcessDiedListener pd = p -> System.out.println(p + "died :(");
-        si.start(pd);
+        SoundInput si = new SoundInput(pd);
+        si.start(1234);
         Thread.sleep(10000);
     }
 }

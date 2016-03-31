@@ -23,11 +23,22 @@ import java.io.IOException;
 public class ConfigServer {
     private final Options options;
     private String filename = "config.toml";
+    private static Config config;
+
+    private final SoundInput soundInput;
+    private final SoundSimulate soundSimulate;
+    private final SoundFFT soundFFT;
+    private final SoundLocate soundLocate;
+
+    public static void main(String[] args) {
+        new ConfigServer(args);
+    }
+
 
     public ConfigServer(String[] args) {
         options = new Options();
         options.addOption("help", "prints out the Help");
-        options.addOption("f", "file", true, "specify the config file. default is \"config.json\"");
+        options.addOption("f", "file", true, "specify the config file. default is \""+ filename +"\"");
 
         try {
             CommandLine cmd = new DefaultParser().parse(options, args);
@@ -39,26 +50,58 @@ public class ConfigServer {
             }
 
             if (!new File(filename).canRead()) {
-                System.err.println("failed to Open config file");
+                Logger.log(ConfigServer.class, Stream.STD_ERR, "failed to Open config file");
                 System.exit(-42);
             }
         } catch (ParseException e) {
-            System.err.println("failed to parse Arguments!");
+            Logger.log(ConfigServer.class, Stream.STD_ERR, "failed to parse Arguments!");
             printHelp();
             System.exit(-1);
         }
         //argument parsing stage finished
-        Toml toml = null;
+
         try {
-            toml = new Toml().read(new File(filename));
+            Toml toml = new Toml().read(new File(filename));
+            config = toml.to(Config.class);
         } catch (Exception e) {
             Logger.log(e);
             System.exit(-123);
         }
-        Config config = toml.to(Config.class);
+        //config reading finished
 
+        ProcessDiedListener processDiedListener = p -> {
+            try {
+                Logger.log(ConfigServer.class, Stream.STD_ERR, p + "s :( restarting everything...");
+                Program.multiKill();
+                startPrograms();
+            } catch (IOException e) {
+                Logger.log(e);
+            }
+        };
+        soundInput = new SoundInput(processDiedListener);
+        soundSimulate = new SoundSimulate(processDiedListener);
+        soundFFT = new SoundFFT(processDiedListener);
+        soundLocate = new SoundLocate(processDiedListener);
+        //created all the Objects
+
+        try {
+            startPrograms();
+        } catch (IOException e) {
+            Logger.log(e);
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread() { //TODO(jaro) remove pointless shutdown error log messages -> shuld be removed now
+            @Override
+            public void run() {
+                Logger.log(ConfigServer.class, Stream.STD_OUT, "shutting down...");
+                Program.multiKill(soundLocate, soundFFT, soundSimulate, soundInput);
+                Logger.log(ConfigServer.class, Stream.STD_OUT, "everything shut down successfully");
+            }
+        });
+    }
+
+    private void startPrograms() throws IOException{
         boolean real = config.general.real;
-
         Logger.log(ConfigServer.class, Stream.STD_OUT, "starting programs with real=" + real);
 
         PortFactory pf = new PortFactory(49151);//magic constant
@@ -76,43 +119,15 @@ public class ConfigServer {
                 ", locateToGui: " + locateToGui +
                 ", locateToWs: " + locateToWs +
                 "}");
-
-        SoundInput soundInput = real ? new SoundInput(real ? inToFft : inToNull) : null;
-        SoundSimulate soundSimulate = new SoundSimulate(real ? inToNull : inToFft, locateToGui);
-        SoundFFT soundFFT = new SoundFFT(inToFft, fftToLocate);
-        SoundLocate soundLocate = new SoundLocate(fftToLocate, locateToGui, locateToWs);
-
-        ProcessDiedListener pd = new ProcessDiedListener() {
-            @Override
-            public void onProcessDied(Process p) {
-                try {
-                    Logger.log(ConfigServer.class, Stream.STD_ERR, p + "died :( restarting everything...");
-                    Program.multiRestart(this, soundInput, soundSimulate, soundFFT, soundLocate);
-                } catch (IOException e) {
-                    Logger.log(e);
-                }
-            }
-        };
-
-        try {
-            Program.multiStart(pd, soundInput, soundSimulate, soundFFT, soundLocate);
-        } catch (IOException e) {
-            Logger.log(e);
+        if (real) {
+            soundInput.start(inToFft);
+            soundSimulate.start(inToNull, locateToGui);
         }
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                Logger.log(ConfigServer.class, Stream.STD_OUT, "shutting down...");
-                    Program.multiKill(soundLocate, soundFFT, soundSimulate, soundInput);
-                Logger.log(ConfigServer.class, Stream.STD_OUT, "everything shut down successfully");
-            }
-        });
-    }
-
-
-    public static void main(String[] args) {
-        new ConfigServer(args);
+        else {
+            soundSimulate.start(inToFft, locateToGui);
+        }
+        soundFFT.start(inToFft, fftToLocate);
+        soundLocate.start(fftToLocate, locateToGui, locateToWs);
     }
 
     private void printHelp() {

@@ -3,6 +3,9 @@ package de.sfn_kassel.soundlocate.configServer.program;
 import de.sfn_kassel.soundlocate.configServer.log.LogThread;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by jaro on 29.03.16.
@@ -11,24 +14,35 @@ import java.io.IOException;
  */
 
 public abstract class SupervisedProgram implements Program {
-    private final ProcessBuilder processBuilder;
+    private final String[] baseProgramm;
     private Process process;
     private LogThread logThread;
+    private final ProcessDiedListener processDiedListener;
 
-    protected SupervisedProgram(String... command) {
-        command[0] = command[0].equals("java") ? command[0] : "bin/" + command[0]; //TODO(jaro): better solution
-        command[1] = command[0].equals("java") ? "bin/" + command[1] : command[1];
-        processBuilder = new ProcessBuilder(command);
+    protected SupervisedProgram(ProcessDiedListener processDiedListener, String... command) {
+        if (command[0].equals("java")) { //TODO: maybe better solution
+            command[1] =  "bin/" + command[1];
+        } else {
+            command[0] = "bin/" + command[0];
+        }
+        baseProgramm = command;
+        this.processDiedListener = processDiedListener;
     }
 
-    public void start(ProcessDiedListener pd) throws IOException {
-        process = processBuilder.start();
-        logThread = new LogThread(process, this.getClass(), pd);
+    protected void start(String... args) throws IOException {
+        List<String> programCall = new ArrayList<>();
+        for (String s : baseProgramm) {
+            programCall.add(s);
+        }
+        programCall.addAll(Arrays.asList(args));
+        ProcessBuilder processBuilderWithArgs = new ProcessBuilder(programCall);
+        process = processBuilderWithArgs.start();
+        logThread = new LogThread(process, this.getClass(), this.processDiedListener);
         logThread.start();
     }
 
     public void kill() {
-        process.destroy();
         logThread.interrupt();
+        process.destroy();
     }
 }
