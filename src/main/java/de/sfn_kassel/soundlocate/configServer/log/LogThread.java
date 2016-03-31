@@ -30,6 +30,7 @@ public class LogThread extends Thread {
         while (true) {
             if (!p.isAlive() && !Thread.interrupted()) {
                 dl.onProcessDied(p);
+                break;
             }
 
             try {
