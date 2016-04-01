@@ -34,11 +34,13 @@ public class ConfigServer {
         options = new Options();
         options.addOption("help", "prints out the Help");
         options.addOption("f", "file", true, "specify the config file. default is \""+ filename +"\"");
+        Logger.beginLog();
 
         try {
             CommandLine cmd = new DefaultParser().parse(options, args);
             if (cmd.hasOption("help")) {
                 printHelp();
+                Logger.log(ConfigServer.class, Stream.STD_OUT, "print help sucessfully");
                 System.exit(0);
             } else if (cmd.hasOption('f')) {
                 filename = cmd.getOptionValue('f');
@@ -69,7 +71,6 @@ public class ConfigServer {
             try {
                 Logger.log(ConfigServer.class, Stream.STD_ERR, p + "s :( restarting everything...");
                 Program.multiKill(soundInput, soundSimulate, soundFFT, soundLocate);
-                waitBetweenStarts();
                 startPrograms();
             } catch (IOException e) {
                 Logger.log(e);
@@ -78,7 +79,6 @@ public class ConfigServer {
         Supervisor su = new Supervisor(processDiedListener);
 
         String positionFileName = "positions.csv";
-        //TODO: write positionFile
 
         soundInput = new SoundInput(su, config.general.samplerate, config.soundInput.deviceName);
         soundSimulate = new SoundSimulate(su, config.general.samplerate, config.soundSimulate.soundFile, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
@@ -129,20 +129,13 @@ public class ConfigServer {
                 "}");
         if (real) {
             soundInput.start(inToFft);
-            waitBetweenStarts();
             soundSimulate.start(inToNull, locateToGui);
         }
         else {
             soundSimulate.start(inToFft, locateToGui);
         }
-        waitBetweenStarts();
         soundFFT.start(inToFft, fftToLocate);
-        waitBetweenStarts();
         soundLocate.start(fftToLocate, locateToGui, locateToWs);
-    }
-
-    private void waitBetweenStarts() {
-
     }
 
     private void printHelp() {
