@@ -119,6 +119,11 @@ public class ConfigServer {
                 Logger.log(ConfigServer.class, Stream.STD_OUT, "shutting down...");
                 Program.multiKill(soundLocate, soundFFT, soundSimulate, soundInput);
                 Logger.log(ConfigServer.class, Stream.STD_OUT, "everything shut down successfully");
+                try {
+                    Logger.getInstance().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

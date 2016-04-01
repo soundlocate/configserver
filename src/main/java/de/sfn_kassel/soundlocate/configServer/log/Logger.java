@@ -17,11 +17,12 @@ import java.util.Map;
  * the main Logger Class
  */
 public class Logger implements Closeable {
-    private static final String FILENAME = "soundlocate.html";
+    private static final String FILENAME = "soundlocate.log";
     private static Logger instance;
     private final SimpleDateFormat f;
     private PrintWriter out;
     private int alternate = 1;
+    private boolean isWriting = false;
 
     private Logger(String logFileName) {
         f = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS");
@@ -47,7 +48,7 @@ public class Logger implements Closeable {
         getInstance().internalLog(ConfigServer.class, Stream.STD_ERR, sw.toString().replace("\n", "\t"));
     }
 
-    private static Logger getInstance() {
+    public static Logger getInstance() {
         if (instance == null) {
             instance = new Logger(FILENAME);
         }
@@ -69,8 +70,10 @@ public class Logger implements Closeable {
     }
 
     private synchronized void println(String s) {
+        isWriting = true;
         System.out.println(s);
         out.println(s);
+        isWriting = false;
     }
 
     private String getFormattedProgramName(Class program) {
@@ -92,8 +95,8 @@ public class Logger implements Closeable {
         return program.getName().split("\\.")[program.getName().split("\\.").length - 1];
     }
 
-    synchronized
     public void close() throws IOException {
+        while (isWriting) ;
         out.close();
     }
 }
