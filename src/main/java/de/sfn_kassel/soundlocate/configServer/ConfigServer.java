@@ -14,7 +14,9 @@ import de.sfn_kassel.soundlocate.configServer.programs.SoundSimulate;
 import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Created by jaro on 29.03.16.
@@ -79,6 +81,24 @@ public class ConfigServer {
         Supervisor su = new Supervisor(processDiedListener);
 
         String positionFileName = "positions.csv";
+        try {
+            PrintWriter fw = new PrintWriter(new FileWriter(new File(positionFileName)));
+            String out = "";
+            for (int i = 0; i < config.general.micPositions.size(); i++) {
+                out += config.general.micPositions.get(i);
+                if (i % 3 == 2) {
+                    out += "\n";
+                } else {
+                    out += ", ";
+                }
+            }
+            fw.print(out);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            Logger.log(e);
+        }
+
 
         soundInput = new SoundInput(su, config.general.samplerate, config.soundInput.deviceName);
         soundSimulate = new SoundSimulate(su, config.general.samplerate, config.soundSimulate.soundFile, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
