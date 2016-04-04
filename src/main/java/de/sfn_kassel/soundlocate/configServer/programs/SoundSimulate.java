@@ -15,6 +15,6 @@ public class SoundSimulate extends SupervisedProgram {
     }
 
     public void start(int outPort, int inPort) throws IOException {
-        super.start("-o " + outPort, "-i " + inPort);
+        super.start("" + outPort, "" + inPort);
     }
 }

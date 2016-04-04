@@ -1,24 +1,26 @@
 java -jar soundInput.jar
-    -o outPort
+    outPort
     -s samplerate
     -d deviceName
+    -n numMics
 soundSimulate
-    -i inPort
-    -o outPort
+    outPort
+    inPort
     -s samplerate
     -f soundFile
     -l logfile -> wenn dieser Parameter nicht angegeben ist, ist loggign inaktiv
     -p positionfile.csv
 soundFFT
-    -i inPort
-    -o outport
+    inPort
+    outport
+    -t sendThreshold
     -f fftSize
     -s samplerate
     -r fftPerSec
     -w windowingFunction
 soundLocate
-    -i inPort
-    -o outPort
+    inPort
+    outPort
     -w wsPort
     -d dataAlgorithms
     -a accuracy

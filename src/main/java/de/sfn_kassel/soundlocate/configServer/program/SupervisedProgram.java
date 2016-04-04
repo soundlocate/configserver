@@ -14,10 +14,9 @@ import java.util.List;
  */
 
 public abstract class SupervisedProgram implements Program {
-    private final String[] baseProgramm;
-    private Process process;
-    private LogThread logThread;
+    private final String[] baseProgram;
     private final Supervisor supervisor;
+    private Process process;
 
     protected SupervisedProgram(Supervisor supervisor, String... command) {
         if (command[0].equals("java")) { //TODO: maybe better solution
@@ -25,19 +24,19 @@ public abstract class SupervisedProgram implements Program {
         } else {
             command[0] = "bin/" + command[0];
         }
-        baseProgramm = command;
+        baseProgram = command;
         this.supervisor = supervisor;
     }
 
     protected void start(String... args) throws IOException {
         List<String> programCall = new ArrayList<>();
-        for (String s : baseProgramm) {
+        for (String s : args) {
             programCall.add(s);
         }
-        programCall.addAll(Arrays.asList(args));
+        programCall.addAll(Arrays.asList(baseProgram));
         ProcessBuilder processBuilderWithArgs = new ProcessBuilder(programCall);
         process = processBuilderWithArgs.start();
-        logThread = new LogThread(process, this.getClass());
+        new LogThread(process, this.getClass());
         supervisor.addProcess(process);
     }
 

@@ -10,11 +10,11 @@ import java.io.IOException;
  * the class, that represents the SoundFFT program
  */
 public class SoundFFT extends SupervisedProgram {
-    public SoundFFT(Supervisor pd, int fftSize, int samplerate, int fftPerSec, String windowingFunction) {
-        super(pd, "soundFFT", "-f " + fftSize, "-s " + samplerate, "-r " + fftPerSec, "-w " + windowingFunction);
+    public SoundFFT(Supervisor pd, int fftSize, int samplerate, int fftPerSec, String windowingFunction, double threshold) {
+        super(pd, "soundFFT", "-f " + fftSize, "-s " + samplerate, "-wr " + fftPerSec, "-w " + windowingFunction, "-t " + threshold);
     }
 
     public void start(int inPort, int outPort) throws IOException {
-        super.start("localhost", "-i " + inPort, "-o " + outPort);
+        super.start("localhost", "" + inPort, "" + outPort);
     }
 }

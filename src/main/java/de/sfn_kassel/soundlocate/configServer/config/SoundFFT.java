@@ -7,4 +7,5 @@ public class SoundFFT {
     public int fftSize;
     public String windowingFunction;
     public int fftPerSec;
+    public double threshold;
 }
