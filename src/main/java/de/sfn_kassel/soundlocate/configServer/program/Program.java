@@ -1,7 +1,5 @@
 package de.sfn_kassel.soundlocate.configServer.program;
 
-import java.io.IOException;
-
 /**
  * Created by jaro on 29.03.16.
  * the abstract interface for representing a Program and its lifecycle

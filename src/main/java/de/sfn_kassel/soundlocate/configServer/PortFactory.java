@@ -25,6 +25,7 @@ public class PortFactory {
     private boolean portUsable(int port) {
         try {
             ServerSocket testServerSocket = new ServerSocket(port);
+            testServerSocket.setReuseAddress(true); //maybe fix
             testServerSocket.close();
         } catch (IOException e) {
             return false;
