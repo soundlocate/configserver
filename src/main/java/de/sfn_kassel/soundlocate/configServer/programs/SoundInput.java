@@ -16,6 +16,6 @@ public class SoundInput extends SupervisedProgram {
     }
 
     public void start(int port) throws IOException {
-        super.start("" + port);
+        super.start("-o ", "" + port);
     }
 }
