@@ -97,6 +97,7 @@ public class Logger implements Closeable {
 
     public void close() throws IOException {
         while (isWriting) ;
+        println("</table>");
         out.close();
     }
 }
