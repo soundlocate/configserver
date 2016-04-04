@@ -12,7 +12,7 @@ import java.io.IOException;
 public class SoundInput extends SupervisedProgram {
     public SoundInput(Supervisor pd, int samplerate, String deviceName) {
         super(pd, "java", "-jar", "soundInput.jar",
-                "-s " + samplerate, "-d " + deviceName);
+                "-s", "" + samplerate, "-d", "" + deviceName);
     }
 
     public void start(int port) throws IOException {
