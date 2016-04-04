@@ -1,6 +1,9 @@
 package de.sfn_kassel.soundlocate.configServer.program;
 
+import de.sfn_kassel.soundlocate.configServer.ConfigServer;
 import de.sfn_kassel.soundlocate.configServer.log.LogThread;
+import de.sfn_kassel.soundlocate.configServer.log.Logger;
+import de.sfn_kassel.soundlocate.configServer.log.Stream;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,10 +33,15 @@ public abstract class SupervisedProgram implements Program {
 
     protected void start(String... args) throws IOException {
         List<String> programCall = new ArrayList<>();
-        for (String s : args) {
+        for (String s : baseProgram) {
             programCall.add(s);
         }
-        programCall.addAll(Arrays.asList(baseProgram));
+        programCall.addAll(Arrays.asList(args));
+
+        for( String s : programCall) {
+            System.out.print(s + " ");
+        }
+
         ProcessBuilder processBuilderWithArgs = new ProcessBuilder(programCall);
         process = processBuilderWithArgs.start();
         new LogThread(process, this.getClass());

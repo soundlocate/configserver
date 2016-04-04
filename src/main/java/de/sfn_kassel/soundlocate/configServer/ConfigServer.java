@@ -17,6 +17,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Created by jaro on 29.03.16.
@@ -43,6 +46,7 @@ public class ConfigServer {
             if (cmd.hasOption("help")) {
                 printHelp();
                 Logger.log(ConfigServer.class, Stream.STD_OUT, "print help sucessfully");
+                Logger.getInstance().close();
                 System.exit(0);
             } else if (cmd.hasOption('f')) {
                 filename = cmd.getOptionValue('f');
@@ -50,12 +54,20 @@ public class ConfigServer {
 
             if (!new File(filename).canRead()) {
                 Logger.log(ConfigServer.class, Stream.STD_ERR, "failed to Open config file");
+                Logger.getInstance().close();
                 System.exit(-42);
             }
         } catch (ParseException e) {
             Logger.log(ConfigServer.class, Stream.STD_ERR, "failed to parse Arguments!");
             printHelp();
+            try {
+                Logger.getInstance().close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             System.exit(-1);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         //argument parsing stage finished
 
@@ -99,9 +111,10 @@ public class ConfigServer {
             Logger.log(e);
         }
 
+        positionFileName = new File(positionFileName).getAbsolutePath();
 
         soundInput = new SoundInput(su, config.general.samplerate, config.soundInput.deviceName);
-        soundSimulate = new SoundSimulate(su, config.general.samplerate, config.soundSimulate.soundFile, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
+        soundSimulate = new SoundSimulate(su, config.general.samplerate, config.soundSimulate.soundFile.equals("") ? null : config.soundSimulate.soundFile, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
         soundFFT = new SoundFFT(su, config.soundFFT.fftSize, config.general.samplerate, config.soundFFT.fftPerSec, config.soundFFT.windowingFunction, config.soundFFT.threshold);
         soundLocate = new SoundLocate(su, config.soundLocate.algorithms, config.soundLocate.accuracy, config.soundReduce.maxClusterSize, config.soundReduce.maxKeep, config.soundReduce.meanWindow, config.general.log ? config.general.logfileBaseName + "_locate.log" : null, positionFileName);
 

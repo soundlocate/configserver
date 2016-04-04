@@ -29,7 +29,6 @@ public class LogThread extends Thread {
         while (true) {
             if (!p.isAlive()) {
                 Logger.log(name, Stream.STD_ERR, "died :(");
-                break;
             }
 
             try {
@@ -53,6 +52,8 @@ public class LogThread extends Thread {
             } catch (IOException e) {
                 if (!e.getMessage().contains("Stream closed")) {
                     Logger.log(e);
+                } else {
+                    break;
                 }
             }
 

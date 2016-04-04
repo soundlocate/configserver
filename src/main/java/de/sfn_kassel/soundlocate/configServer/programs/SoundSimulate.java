@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class SoundSimulate extends SupervisedProgram {
     public SoundSimulate(Supervisor pd, int samplerate, String soundFile, String logfile, String positionfile) {
-        super(pd, "soundSimulate", "-s " + samplerate, "-f " + soundFile, logfile != null ? "-l " + logfile : "", "-p " + positionfile);
+        super(pd, "soundSimulate", "-s", "" + samplerate, "-p", "" + positionfile);
     }
 
     public void start(int outPort, int inPort) throws IOException {
