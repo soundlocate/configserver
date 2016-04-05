@@ -7,19 +7,13 @@ import de.sfn_kassel.soundlocate.configServer.log.Stream;
 import de.sfn_kassel.soundlocate.configServer.program.ProcessDiedListener;
 import de.sfn_kassel.soundlocate.configServer.program.Program;
 import de.sfn_kassel.soundlocate.configServer.program.Supervisor;
-import de.sfn_kassel.soundlocate.configServer.programs.SoundFFT;
-import de.sfn_kassel.soundlocate.configServer.programs.SoundInput;
-import de.sfn_kassel.soundlocate.configServer.programs.SoundLocate;
-import de.sfn_kassel.soundlocate.configServer.programs.SoundSimulate;
+import de.sfn_kassel.soundlocate.configServer.programs.*;
 import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 /**
  * Created by jaro on 29.03.16.
@@ -34,6 +28,7 @@ public class ConfigServer {
     private SoundSimulate soundSimulate = null;
     private SoundFFT soundFFT = null;
     private SoundLocate soundLocate = null;
+    private WebOut webOut = null;
 
     public ConfigServer(String[] args) {
         options = new Options();
@@ -84,7 +79,7 @@ public class ConfigServer {
         ProcessDiedListener processDiedListener = p -> {
             try {
                 Logger.log(ConfigServer.class, Stream.STD_ERR, p + "s :( restarting everything...");
-                Program.multiKill(soundInput, soundSimulate, soundFFT, soundLocate);
+                Program.multiKill(soundInput, soundSimulate, soundFFT, soundLocate, webOut);
                 startPrograms();
             } catch (IOException e) {
                 Logger.log(e);
@@ -117,6 +112,7 @@ public class ConfigServer {
         soundSimulate = new SoundSimulate(su, config.general.samplerate, config.soundSimulate.soundFile.equals("") ? null : config.soundSimulate.soundFile, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
         soundFFT = new SoundFFT(su, config.soundFFT.fftSize, config.general.samplerate, config.soundFFT.fftPerSec, config.soundFFT.windowingFunction, config.soundFFT.threshold);
         soundLocate = new SoundLocate(su, config.soundLocate.algorithms, config.soundLocate.accuracy, config.soundReduce.maxClusterSize, config.soundReduce.maxKeep, config.soundReduce.meanWindow, config.general.log ? config.general.logfileBaseName + "_locate.log" : null, positionFileName);
+        webOut = new WebOut();
 
         //created all the Objects
 
@@ -174,6 +170,7 @@ public class ConfigServer {
         }
         soundFFT.start(inToFft, fftToLocate);
         soundLocate.start(fftToLocate, locateToGui, locateToWs);
+        webOut.start(locateToWs);
     }
 
     private void printHelp() {

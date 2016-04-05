@@ -1,0 +1,3 @@
+[submodule "bin/webOut"]
+	path = bin/webOut
+	url = https://jarhab@bitbucket.org/sfn_pcode/soundlocatevisualizer.git

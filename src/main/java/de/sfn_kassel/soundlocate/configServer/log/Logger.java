@@ -40,12 +40,16 @@ public class Logger implements Closeable {
         getInstance().internalLog(program, stream, msg);
     }
 
-    public static void log(Exception e) {
+    public static void log(Exception e, Class program) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
 
-        getInstance().internalLog(ConfigServer.class, Stream.STD_ERR, sw.toString().replace("\n", "\t"));
+        getInstance().internalLog(program, Stream.STD_ERR, sw.toString().replace("\n", "\t"));
+    }
+
+    public static void log(Exception e) {
+        log(e, ConfigServer.class);
     }
 
     public static Logger getInstance() {
