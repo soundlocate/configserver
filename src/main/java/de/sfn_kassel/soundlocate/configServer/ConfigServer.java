@@ -108,7 +108,7 @@ public class ConfigServer {
 
         positionFileName = new File(positionFileName).getAbsolutePath();
 
-        soundInput = new SoundInput(su, config.general.samplerate, config.soundInput.deviceName);
+        soundInput = new SoundInput(su, config.general.samplerate, config.soundInput.deviceName, config.general.micPositions.size() / 3);
         soundSimulate = new SoundSimulate(su, config.general.samplerate, config.soundSimulate.soundFile.equals("") ? null : config.soundSimulate.soundFile, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
         soundFFT = new SoundFFT(su, config.soundFFT.fftSize, config.general.samplerate, config.soundFFT.fftPerSec, config.soundFFT.windowingFunction, config.soundFFT.threshold);
         soundLocate = new SoundLocate(su, config.soundLocate.algorithms, config.soundLocate.accuracy, config.soundReduce.maxClusterSize, config.soundReduce.maxKeep, config.soundReduce.meanWindow, config.general.log ? config.general.logfileBaseName + "_locate.log" : null, positionFileName, config.soundReduce.dissimilarityFunction);
