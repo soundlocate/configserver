@@ -168,9 +168,20 @@ public class ConfigServer {
         else {
             soundSimulate.start(inToFft, locateToGui);
         }
+        waitInBetween();
         soundFFT.start(inToFft, fftToLocate);
+        waitInBetween();
         soundLocate.start(fftToLocate, locateToGui, locateToWs);
+        waitInBetween();
         webOut.start(locateToWs);
+    }
+
+    private void waitInBetween() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Logger.log(e);
+        }
     }
 
     private void printHelp() {
