@@ -7,4 +7,5 @@ public class SoundReduce {
     public double maxClusterSize;
     public int maxKeep;
     public int meanWindow;
+    public String dissimilarityFunction;
 }
