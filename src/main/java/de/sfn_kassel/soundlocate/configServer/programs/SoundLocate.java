@@ -14,7 +14,7 @@ public class SoundLocate extends SupervisedProgram {
         super(pd, logfile == null ? new String[] {
                 "soundLocate", "-d", "" + dataAlgorithms, "-a", "" + accuracy, "-c", "" + maxClusterSize, "-k", "" + maxKeep, "-w", "" + meanWindow, "-p", "" + positionFile, "-d", disFunc
         } : new String[] {
-                "soundLocate", "-d", "" + dataAlgorithms, "-a", "" + accuracy, "-c", "" + maxClusterSize, "-k", "" + maxKeep, "-w", "" + meanWindow, "-p", "" + positionFile, "-l", "" + logfile, "-d", disFunc
+                "soundLocate", "-d", "" + dataAlgorithms, "-a", "" + accuracy, "-c", "" + maxClusterSize, "-k", "" + maxKeep, "-w", "" + meanWindow, "-p", "" + positionFile, "-l", "" + logfile, "-f", disFunc
         });
     }
 
