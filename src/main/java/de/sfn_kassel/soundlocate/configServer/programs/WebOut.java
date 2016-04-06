@@ -52,7 +52,7 @@ public class WebOut implements Program {
                     }
 
                     bytes = new String(bytes)
-                            .replace("/*@JAVA_PORT@*/", InetAddress.getLocalHost().getHostAddress() + wsPort)
+                            .replace("/*@JAVA_PORT@*/", InetAddress.getLocalHost().getHostAddress() + ":" + wsPort)
                             .replace("/*@JAVA_MICS@*/", micString)
                             .getBytes();
 
