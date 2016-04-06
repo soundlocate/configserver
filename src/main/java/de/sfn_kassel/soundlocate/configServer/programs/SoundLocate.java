@@ -12,7 +12,7 @@ import java.io.IOException;
 public class SoundLocate extends SupervisedProgram {
     public SoundLocate(Supervisor pd, String dataAlgorithms, double accuracy, double maxClusterSize, int maxKeep, int meanWindow, String logfile, String positionFile, String disFunc) {
         super(pd, logfile == null ? new String[] {
-                "soundLocate", "-d", "" + dataAlgorithms, "-a", "" + accuracy, "-c", "" + maxClusterSize, "-k", "" + maxKeep, "-w", "" + meanWindow, "-p", "" + positionFile, "-d", disFunc
+                "soundLocate", "-d", "" + dataAlgorithms, "-a", "" + accuracy, "-c", "" + maxClusterSize, "-k", "" + maxKeep, "-w", "" + meanWindow, "-p", "" + positionFile, "-f", disFunc
         } : new String[] {
                 "soundLocate", "-d", "" + dataAlgorithms, "-a", "" + accuracy, "-c", "" + maxClusterSize, "-k", "" + maxKeep, "-w", "" + meanWindow, "-p", "" + positionFile, "-l", "" + logfile, "-f", disFunc
         });

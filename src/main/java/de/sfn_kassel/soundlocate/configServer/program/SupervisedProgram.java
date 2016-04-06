@@ -1,6 +1,5 @@
 package de.sfn_kassel.soundlocate.configServer.program;
 
-import de.sfn_kassel.soundlocate.configServer.ConfigServer;
 import de.sfn_kassel.soundlocate.configServer.log.LogThread;
 import de.sfn_kassel.soundlocate.configServer.log.Logger;
 import de.sfn_kassel.soundlocate.configServer.log.Stream;
@@ -23,7 +22,7 @@ public abstract class SupervisedProgram implements Program {
 
     protected SupervisedProgram(Supervisor supervisor, String... command) {
         if (command[0].equals("java")) { //TODO: maybe better solution
-            command[1] =  "bin/" + command[1];
+            command[2] = "bin/" + command[2];
         } else {
             command[0] = "bin/" + command[0];
         }
