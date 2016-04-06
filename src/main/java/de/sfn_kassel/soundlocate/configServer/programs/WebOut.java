@@ -7,6 +7,7 @@ import de.sfn_kassel.soundlocate.configServer.log.Stream;
 import de.sfn_kassel.soundlocate.configServer.program.Program;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -51,7 +52,7 @@ public class WebOut implements Program {
                     }
 
                     bytes = new String(bytes)
-                            .replace("/*@JAVA_PORT@*/", "localhost:" + wsPort)
+                            .replace("/*@JAVA_PORT@*/", InetAddress.getLocalHost().getHostAddress() + wsPort)
                             .replace("/*@JAVA_MICS@*/", micString)
                             .getBytes();
 
