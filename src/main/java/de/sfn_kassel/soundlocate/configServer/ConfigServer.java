@@ -25,6 +25,7 @@ public class ConfigServer {
     private final Options options;
     private String filename = "config.toml";
     private SoundInput soundInput = null;
+    private FpgaInput fpgaInput = null;
     private SoundSimulate soundSimulate = null;
     private SoundFFT soundFFT = null;
     private SoundLocate soundLocate = null;
@@ -109,13 +110,13 @@ public class ConfigServer {
         positionFileName = new File(positionFileName).getAbsolutePath();
 
         soundInput = new SoundInput(su, config.general.samplerate, config.soundInput.deviceName, config.general.micPositions.size() / 3);
+        fpgaInput = new FpgaInput(su, config.soundInput.ip, config.soundInput.port);
         soundSimulate = new SoundSimulate(su, config.general.samplerate, config.soundSimulate.soundFile.equals("") ? null : config.soundSimulate.soundFile, config.general.log ? config.general.logfileBaseName + "_simulate.log" : null, positionFileName);
         soundFFT = new SoundFFT(su, config.soundFFT.fftSize, config.general.samplerate, config.soundFFT.fftPerSec, config.soundFFT.windowingFunction, config.soundFFT.threshold);
         soundLocate = new SoundLocate(su, config.soundLocate.algorithms, config.soundLocate.accuracy, config.soundReduce.maxClusterSize, config.soundReduce.maxKeep, config.soundReduce.meanWindow, config.general.log ? config.general.logfileBaseName + "_locate.log" : null, positionFileName, config.soundReduce.dissimilarityFunction);
         webOut = new WebOut(config.general.micPositions);
 
         //created all the Objects
-
         try {
             startPrograms();
         } catch (IOException e) {
@@ -144,6 +145,7 @@ public class ConfigServer {
     private void startPrograms() throws IOException{
         boolean real = config.general.real;
         Logger.log(ConfigServer.class, Stream.STD_OUT, "starting programs with real=" + real);
+        Logger.log(ConfigServer.class, Stream.STD_OUT, "out port is: " + config.general.outPort);
 
         PortFactory pf = new PortFactory(49151);//magic constant
         int inToFft, inToNull, fftToLocate, locateToGui, locateToWs;
@@ -162,7 +164,11 @@ public class ConfigServer {
                 ", locateToWs: " + locateToWs +
                 "}");
         if (real) {
-            soundInput.start(inToFft);
+            if(config.soundInput.fpga) {
+                fpgaInput.start(inToFft);
+            } else {
+                soundInput.start(inToFft);
+            }
             soundSimulate.start(inToNull, locateToGui);
         }
         else {
@@ -173,7 +179,7 @@ public class ConfigServer {
         waitInBetween();
         soundLocate.start(fftToLocate, locateToGui, locateToWs);
         waitInBetween();
-        webOut.start(locateToWs);
+        webOut.start(locateToWs, config.general.outPort == 0 ? 8080 : config.general.outPort);
     }
 
     private void waitInBetween() {

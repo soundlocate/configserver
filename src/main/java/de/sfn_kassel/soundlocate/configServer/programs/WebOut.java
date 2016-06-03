@@ -26,7 +26,7 @@ public class WebOut implements Program {
         this.mics = mics;
     }
 
-    public void start(int wsPort) {
+    public void start(int wsPort, int outPort) {
         fileHandler = httpExchange -> {
             //    byte[] bytes = "something went wrong...".getBytes();
             //    httpExchange.sendResponseHeaders(500, bytes.length);
@@ -74,7 +74,7 @@ public class WebOut implements Program {
         };
 
         try {
-            server = HttpServer.create(new InetSocketAddress(8080), 0);
+            server = HttpServer.create(new InetSocketAddress(outPort), 0);
             server.createContext("/", fileHandler);
             server.start();
         } catch (IOException e) {

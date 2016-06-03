@@ -5,4 +5,7 @@ package de.sfn_kassel.soundlocate.configServer.config;
  */
 public class SoundInput {
     public String deviceName;
+    public boolean fpga;
+    public String ip;
+    public String port;
 }

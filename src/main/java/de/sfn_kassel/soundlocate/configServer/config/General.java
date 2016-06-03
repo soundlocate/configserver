@@ -11,4 +11,5 @@ public class General {
     public boolean log;
     public String logfileBaseName;
     public List<Double> micPositions;
+    public int outPort;
 }
